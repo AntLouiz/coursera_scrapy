@@ -4,8 +4,15 @@ import scrapy
 
 class CourseraSpiderSpider(scrapy.Spider):
     name = 'coursera_spider'
-    allowed_domains = ['https://pt.coursera.org/browse']
-    start_urls = ['http://https://pt.coursera.org/browse/']
+    allowed_domains = ['*']
+    start_urls = ['https://pt.coursera.org/browse?languages=en']
 
     def parse(self, response):
-        pass
+      categories_link = response.xpath("//a[contains(@class, 'DomainNavItem ')]")
+
+      for category in categories_link:
+        category_name = category.xpath(
+          "span[contains(@class, 'domain-name')]/text()"
+        ).extract()
+
+        print(category_name)

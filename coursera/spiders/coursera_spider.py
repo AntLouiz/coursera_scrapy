@@ -15,4 +15,6 @@ class CourseraSpiderSpider(scrapy.Spider):
           "span[contains(@class, 'domain-name')]/text()"
         ).extract()
 
-        print(category_name)
+        category_href = category.xpath("@href").extract()
+
+        print(category_name, category_href)

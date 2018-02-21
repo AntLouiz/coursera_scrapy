@@ -31,5 +31,20 @@ class CourseraSpiderSpider(scrapy.Spider):
         yield request
 
     def parse_category(self, response):
-      self.log("ENTROU NO CALLBACK")
-      self.log(response.xpath('//title/text()').extract_first())
+      courses = response.xpath("//a[contains(@class, 'rc-OfferingCard')]")
+
+      for course in courses:
+        course_url = course.xpath("./@href").extract_first()
+
+        request = scrapy.Request(
+          url="{}{}".format(self.root_url, course_url),
+          callback=self.parse_course,
+          dont_filter=True
+        )
+
+        yield request
+
+    def parse_course(self, response):
+      yield {
+        'title': response.xpath("//title/text()").extract_first()
+      }

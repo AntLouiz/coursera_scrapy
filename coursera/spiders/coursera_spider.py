@@ -5,10 +5,30 @@ import scrapy
 class CourseraSpiderSpider(scrapy.Spider):
     name = 'coursera_spider'
     allowed_domains = ['*']
-    start_urls = ['https://pt.coursera.org/browse?languages=en']
+    start_urls = ['https://pt.coursera.org/browse?languages=pt']
     root_url = 'https://www.coursera.org'
+    category = None
+
+    def start_requests(self):
+      if self.category is None:
+        request = scrapy.Request(
+          url=self.root_url,
+          callback=self.parse,
+          dont_filter=True
+        )
+
+        yield request
+
+      else:
+        request = scrapy.Request(
+          url="{}/browse/{}".format(self.root_url, self.category)
+        )
+
+        yield request
 
     def parse(self, response):
+      self.log(self.category)
+
       categories_link = response.xpath("//a[contains(@class, 'DomainNavItem ')]")
 
       for category in categories_link:

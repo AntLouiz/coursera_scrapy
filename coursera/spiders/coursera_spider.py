@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from scrapy.loader import ItemLoader
+from coursera.items import CourseItem
 
 
 class CourseraSpiderSpider(scrapy.Spider):
@@ -65,6 +67,9 @@ class CourseraSpiderSpider(scrapy.Spider):
         yield request
 
     def parse_course(self, response):
-      yield {
-        'title': response.xpath("//title/text()").extract_first()
-      }
+      course_loader = ItemLoader(CourseItem(), response)
+
+      course_loader.add_xpath('title', "//title/text()")
+      course_loader.add_xpath('instructors', "//p[contains(@class, 'instructor-name')]/span/a/text()")
+
+      return course_loader.load_item()
